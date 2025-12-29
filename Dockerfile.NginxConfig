@@ -1,0 +1,5 @@
+FROM alpine:latest
+RUN apk add --no-cache openssl bash
+COPY ./scripts/NginxConfig.sh /usr/local/bin/NginxConfig.sh
+RUN chmod +x /usr/local/bin/NginxConfig.sh
+ENTRYPOINT ["/bin/sh", "-c", "/usr/local/bin/NginxConfig.sh"]
