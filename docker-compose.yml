@@ -1,15 +1,12 @@
-version: "3.8"
-
 services:
 
-  # Configure Ingress (nginx)
   configure_ingress:
     volumes:
       - ./nginx/etc:/nginx_repo_configs:ro
       - ./nginx/html:/nginx_repo_html:ro
       - ../MarvinOS_Data/nginx:/nginx:rw
       - ../MarvinOS_Data/certs:/certs:rw
-      - ../MarvinOS_Data/html:/html:rw
+      - ../MarvinOS_Data/html:/html/:rw
     build:
       context: ./
       dockerfile: Dockerfile.NginxConfig
@@ -18,24 +15,35 @@ services:
       - default
       - MarvinOSNET
 
+  configure_searxng:
+    volumes:
+      - ./searxng:/searxng_repo_configs:ro
+      - ../MarvinOS_Data/searxng:/searxng:rw
+    build:
+      context: ./
+      dockerfile: Dockerfile.SearxngConfig
+    restart: "no"
+    networks:
+      - default
+      - MarvinOSNET
+
   ingress:
     image: nginx:latest
+    container_name: ingress
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ../MarvinOS_Data/nginx:/etc/nginx:ro
       - ../MarvinOS_Data/certs:/certs:ro
-      - ../MarvinOS_Data/html:/var/www/html:ro
+      - ../MarvinOS_Data/html:/html:ro
     networks:
       - default
       - MarvinOSNET
     depends_on:
       - open-webui
     healthcheck:
-      test:
-        - CMD-SHELL
-        - nginx -t -c /etc/nginx/nginx.conf >/tmp/nginx_check.log 2>&1 || { cat /tmp/nginx_check.log; exit 1; }
+      test: ["CMD-SHELL", "nginx -t -c /etc/nginx/nginx.conf >/tmp/nginx_check.log 2>&1 || { cat /tmp/nginx_check.log; exit 1; }"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -47,7 +55,10 @@ services:
     gpus: all
     environment:
       - OLLAMA_HOST=0.0.0.0
-      - DEFAULT_MODELS=neural-chat
+      - OLLAMA_FLASH_ATTENTION=1
+      - OLLAMA_KV_CACHE_TYPE=q4_0
+      - OLLAMA_NUM_CTX=32768
+      - OLLAMA_GPU_LAYERS=40
     volumes:
       - ../MarvinOS_Data/ollama:/root/.ollama:rw
     ports:
@@ -63,11 +74,11 @@ services:
       - MarvinOSNET
 
   # Model pull jobs
-  pull-llm-ollama-llama3:
+  pull-llm-ollama-qwen3-coder:
     build:
       context: ./
       dockerfile: Dockerfile.pull-model
-    command: llama3
+    command: qwen3-coder
     depends_on:
       - ollama
     networks:
@@ -75,11 +86,11 @@ services:
       - MarvinOSNET
     restart: "no"
 
-  pull-llm-ollama-mistral:
+  pull-llm-ollama-qwen3-8b:
     build:
       context: ./
       dockerfile: Dockerfile.pull-model
-    command: mistral
+    command: qwen3
     depends_on:
       - ollama
     networks:
@@ -87,11 +98,23 @@ services:
       - MarvinOSNET
     restart: "no"
 
-  pull-llm-ollama-codellama:
+  pull-llm-ollama-gemma-3:
     build:
       context: ./
       dockerfile: Dockerfile.pull-model
-    command: codellama
+    command: gemma3:27b
+    depends_on:
+      - ollama
+    networks:
+      - default
+      - MarvinOSNET
+    restart: "no"
+  
+  pull-llm-ollama-phi4-mini-reasoning:
+    build:
+      context: ./
+      dockerfile: Dockerfile.pull-model
+    command: phi4-mini-reasoning:latest
     depends_on:
       - ollama
     networks:
@@ -99,11 +122,23 @@ services:
       - MarvinOSNET
     restart: "no"
 
-  pull-llm-ollama-neural-chat:
+  pull-llm-qwen3-vl:
     build:
       context: ./
       dockerfile: Dockerfile.pull-model
-    command: neural-chat
+    command: qwen3-vl
+    depends_on:
+      - ollama
+    networks:
+      - default
+      - MarvinOSNET
+    restart: "no"
+  
+  pull-llm-ollama-qwen3-embedding:
+    build:
+      context: ./
+      dockerfile: Dockerfile.pull-model
+    command: qwen3-embedding
     depends_on:
       - ollama
     networks:
@@ -111,11 +146,11 @@ services:
       - MarvinOSNET
     restart: "no"
 
-  pull-llm-ollama-llama2:
+  pull-llm-ollama-deepseek-r1:
     build:
       context: ./
       dockerfile: Dockerfile.pull-model
-    command: llama2
+    command: deepseek-r1
     depends_on:
       - ollama
     networks:
@@ -123,11 +158,11 @@ services:
       - MarvinOSNET
     restart: "no"
 
-  pull-llm-ollama-phi:
+  pull-llm-ollama-llama3_2_3b:
     build:
       context: ./
       dockerfile: Dockerfile.pull-model
-    command: phi
+    command: llama3.2
     depends_on:
       - ollama
     networks:
@@ -135,11 +170,11 @@ services:
       - MarvinOSNET
     restart: "no"
 
-  pull-llm-ollama-wizard-math:
+  pull-llm-dolphin-mistral:
     build:
       context: ./
       dockerfile: Dockerfile.pull-model
-    command: wizard-math
+    command: dolphin-mistral:latest
     depends_on:
       - ollama
     networks:
@@ -147,23 +182,11 @@ services:
       - MarvinOSNET
     restart: "no"
 
-  pull-llm-ollama-openchat:
+  pull-llm-mannix-llama3.1-8b-abliterated:
     build:
       context: ./
       dockerfile: Dockerfile.pull-model
-    command: openchat
-    depends_on:
-      - ollama
-    networks:
-      - default
-      - MarvinOSNET
-    restart: "no"
-
-  pull-llm-ollama-tinyllama:
-    build:
-      context: ./
-      dockerfile: Dockerfile.pull-model
-    command: tinyllama
+    command: mannix/llama3.1-8b-abliterated:latest
     depends_on:
       - ollama
     networks:
@@ -186,6 +209,9 @@ services:
       - AUDIO_TTS_ENGINE=openai
       - AUDIO_TTS_OPENAI_API_KEY=--openai-edge-tts-key--
       - AUDIO_TTS_OPENAI_API_BASE_URL=http://openai-edge-tts:5050
+      - ENABLE_WEB_SEARCH=true
+      - WEB_SEARCH_ENGINE=searxng
+      - SEARXNG_QUERY_URL=http://searxng:8080/search?q=<query>
     volumes:
       - ../MarvinOS_Data/open-webui:/app/backend/data:rw
     depends_on:
@@ -213,7 +239,21 @@ services:
       - MarvinOSNET
     restart: unless-stopped
 
-
+  searxng:
+    image: searxng/searxng:latest
+    container_name: searxng
+    ports:
+    - "8081:8080"
+    restart: unless-stopped
+    environment:
+      - SEARXNG_BASE_URL=http://searxng:8080/
+      - SEARXNG_INSTANCE_NAME=MarvinOS Search
+      - SEARXNG_ALLOWED_HOSTS=*
+    volumes:
+      - ../MarvinOS_Data/searxng:/etc/searxng:rw
+    networks:
+      - default
+      - MarvinOSNET
 
 networks:
   default:

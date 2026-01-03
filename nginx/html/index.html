@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MarvinOS Online — John C. Vincent</title>
+
+  <style>
+    /* ---------- Reset & Base Styles ---------- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+      /* Gradient (semi-transparent) + tiled background image */
+      background:
+        url('images/background.png') repeat;
+        linear-gradient(
+          135deg,
+          rgba(245, 247, 250, 0.85),
+          rgba(195, 207, 226, 0.85)
+        ),
+   
+
+      background-position: center center;
+      background-attachment: fixed;
+
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 20px 20px 80px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+      color: #1a1a1a;
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 40px;
+      color: #555;
+    }
+
+    /* ---------- Buttons ---------- */
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      max-width: 300px;
+      margin-bottom: 40px;
+    }
+
+    .btn {
+      text-decoration: none;
+      padding: 15px 25px;
+      background-color: #4a90e2;
+      color: white;
+      font-weight: bold;
+      border-radius: 8px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      background-color: #357abd;
+      transform: translateY(-2px);
+    }
+
+    /* ---------- Support Section (Glass Card) ---------- */
+    .support-section {
+      margin-top: 10px;
+      padding: 24px 28px;
+      border-radius: 16px;
+
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      max-width: 320px;
+    }
+
+    .support-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #333;
+      letter-spacing: 0.3px;
+    }
+
+    .support-subtitle {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .cashapp-img {
+      width: 200px;
+      max-width: 85vw;
+      cursor: pointer;
+      animation: subtlePulse 4s ease-in-out infinite;
+      transition: transform 0.25s ease, filter 0.25s ease;
+    }
+
+    .cashapp-img:hover {
+      transform: scale(1.06);
+      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.25));
+      animation-play-state: paused;
+    }
+
+    @keyframes subtlePulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.015);
+      }
+    }
+
+    /* ---------- Footer ---------- */
+    footer {
+      position: absolute;
+      bottom: 20px;
+      font-size: 0.9rem;
+      color: #777;
+    }
+
+    /* ---------- Mobile ---------- */
+    @media (max-width: 400px) {
+      h1 {
+        font-size: 2.2rem;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+
+      .cashapp-img {
+        width: 170px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>John C. Vincent</h1>
+  <p>Software Engineer & AI Researcher</p>
+
+  <div class="button-container">
+    <a class="btn" href="/" target="_blank">Try MarvinOS.online LLM</a>
+    <a class="btn" href="https://github.com/MarvinOS-online" target="_blank">Visit My GitHub</a>
+    <a class="btn" href="resume.html">View My Resume</a>
+    
+  </div>
+
+  <!-- Support / Donate -->
+  <div class="support-section">
+    <div class="support-title">Support MarvinOS</div>
+    <div class="support-subtitle">Scan or tap to contribute</div>
+
+    <a href="images/cashapp.png" target="_blank" aria-label="Support via Cash App">
+      <img
+        src="images/cashapp.png"
+        alt="Cash App $Loik.B.Poki"
+        class="cashapp-img"
+      />
+    </a>
+  </div>
+
+  <footer>
+    &copy; 2026 John C. Vincent — marvinos.online
+  </footer>
+
+</body>
+</html>

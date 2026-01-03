@@ -1,0 +1,5 @@
+FROM alpine:latest
+RUN apk add --no-cache openssl bash
+COPY ./scripts/SearxngConfig.sh /usr/local/bin/SearxngConfig.sh
+RUN chmod +x /usr/local/bin/SearxngConfig.sh
+ENTRYPOINT ["/bin/sh", "-c", "/usr/local/bin/SearxngConfig.sh"]

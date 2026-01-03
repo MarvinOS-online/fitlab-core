@@ -27,6 +27,8 @@ else
 fi
 
 #Copy the NGINX configs and any websites
-ls -al $NGINX_REPO_CONFIGS
 cp -r $NGINX_REPO_CONFIGS/* $NGINX_ETC_DIR/.
 cp -r $NGINX_REPO_HTML/* $PUBLIC_HTML_DIR/.
+chmod -R 644 $PUBLIC_HTML_DIR/*
+chmod 755 $PUBLIC_HTML_DIR
+chmod 755 $PUBLIC_HTML_DIR/images
