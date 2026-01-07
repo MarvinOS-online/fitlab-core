@@ -1,0 +1,21 @@
+## General Purpose Models ##
+qwen3
+gemma3:27b
+phi4-mini-reasoning:latest
+deepseek-r1
+llama3.2
+## Visual Reasoning Models ##
+qwen3-vl
+## Unlocked Models ##
+dolphin-mistral:latest
+mannix/llama3.1-8b-abliterated:latest
+## Coding Models ##
+qwen3-coder
+qwen2.5-coder:7b
+codellama:7b
+deepseek-coder:6.7b
+codegemma:7b
+starcoder2:7b
+granite-code:8b
+opencoder:8b
+qwen3-embedding

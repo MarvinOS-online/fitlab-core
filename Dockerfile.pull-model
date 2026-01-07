@@ -1,4 +1,5 @@
 FROM alpine:latest
 COPY ./scripts/pull-model.sh /usr/local/bin/pull-model.sh
+COPY ./Options/OllamaModels.txt /usr/local/bin/OllamaModels.txt
 RUN chmod +x /usr/local/bin/pull-model.sh
 ENTRYPOINT ["/usr/local/bin/pull-model.sh"] 

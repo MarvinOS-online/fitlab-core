@@ -3,11 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <title>John C. Vincent — Resume</title>
-
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="John C. Vincent — Principal DevOps Engineer, SRE, and AI Infrastructure specialist." />
   <meta name="author" content="John C. Vincent" />
-
   <style>
     /* ==============================
        PRINT PAGE SETUP
@@ -16,11 +14,9 @@
       size: 8.5in 11in;
       margin: 0.75in;
     }
-
     * {
       box-sizing: border-box;
     }
-
     /* ==============================
        BODY
        ============================== */
@@ -31,17 +27,14 @@
       color: #333;
       background: #ffffff;
     }
-
     /* Screen-only background */
     @media screen {
       body {
         background:
           url('images/background.png') repeat;
           linear-gradient(135deg, #f5f7fa, #c3cfe2),
-
       }
     }
-
     /* ==============================
        CONTAINER
        ============================== */
@@ -49,30 +42,25 @@
       max-width: 8.5in;
       margin: 0 auto;
     }
-
     /* ==============================
        HEADER
        ============================== */
     header {
       margin-bottom: 24px;
     }
-
     h1 {
       font-size: 34pt;
       margin: 0 0 6px 0;
       color: #ff4000;
     }
-
     .subtitle {
       font-size: 18pt;
       margin: 0;
     }
-
     .contact {
       font-size: 18pt;
       margin: 0;
     }
-
     /* ==============================
        HEADINGS
        ============================== */
@@ -83,85 +71,67 @@
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
-
     h3 {
       font-size: 20pt;
       margin: 14px 0 2px 0;
       font-weight: bold;
     }
-
     /* ==============================
-       TEXT
+       TEXT FORMATTING
        ============================== */
-    p {
-      margin: 0 0 6px 0;
-      line-height: 1.35;
-    }
-
-    ul {
-      margin: 6px 0 14px 18px;
-      padding: 0;
-    }
-
-    li {
-      margin-bottom: 4px;
-    }
-
-    /* ==============================
-       META TEXT
-       ============================== */
-    .role,
-    .dates {
-      font-size: 18pt;
-    }
-
-    .dates {
-      color: #444;
-    }
-
-    /* ==============================
-       SKILLS
-       ============================== */
-    .skill-group {
-      margin-bottom: 8px;
-    }
-
-    .skill-group strong {
-      display: block;
+    strong {
       font-weight: bold;
     }
-
     /* ==============================
-       SECTIONS
+       LIST FORMATTING
        ============================== */
-    section {
-      margin-bottom: 18px;
+    ul {
+      margin: 8px 0 8px 20px;
+      padding: 0;
     }
-
+    li {
+      margin: 4px 0;
+      font-size: 10pt;
+    }
+    /* ==============================
+       WORK EXPERIENCE SECTIONS
+       ============================== */
+    .company {
+      font-weight: bold;
+      margin-top: 12px;
+    }
+    .position {
+      font-style: italic;
+      margin-bottom: 4px;
+    }
+    .dates {
+      margin-bottom: 8px;
+    }
+    /* ==============================
+       ADDITIONAL KEYWORDS
+       ============================== */
+    .keywords {
+      margin-top: 20px;
+      padding-top: 10px;
+      border-top: 1px solid #ccc;
+    }
+    .keywords h2 {
+      margin-top: 0;
+    }
+    .keywords ul {
+      columns: 2;
+      column-gap: 20px;
+    }
     /* ==============================
        PAGE BREAKS
        ============================== */
     .page-break {
       page-break-before: always;
     }
-
-    /* ==============================
-       PRINT CLEANUP
-       ============================== */
-    @media print {
-      body {
-        background: none !important;
-      }
-    }
   </style>
 </head>
-
 <body>
   <div class="container">
-
-    <!-- ==========================
-         HEADER
-         ========================== -->
     <header>
       <h1>John C. Vincent</h1>
       <p class="subtitle">Principal DevOps Engineer | SRE | AI Infrastructure</p>
@@ -169,134 +139,125 @@
       <p class="contact">+1-267-416-0278 | mrjohnvincent@aol.com</p>
     </header>
 
-    <!-- ==========================
-         SUMMARY
-         ========================== -->
-    <section>
-      <h2>Summary</h2>
-      <p>
-        Principal DevOps Engineer and Site Reliability Engineer with 20+ years of
-        experience designing, operating, and scaling production infrastructure
-        across enterprise, SaaS, and academic environments. Specialized in
-        incident response, automation, CI/CD, and AI infrastructure, including
-        GPU-based systems and LLM pipelines. Proven record of reducing MTTR,
-        improving system performance by up to 90%, and delivering measurable
-        business impact, including $400k+ annual cost savings.
-      </p>
-    </section>
+    <h2>SUMMARY</h2>
+    <p>Principal DevOps Engineer and Site Reliability Engineer with 20+ years of experience building and operating cloud infrastructure, high-availability production systems, and mission-critical platforms across enterprise, SaaS, and academic environments. Deep expertise in incident response, on-call operations, CI/CD, infrastructure as code, disaster recovery, and monitoring and observability. Proven success reducing MTTR, improving system reliability, and delivering measurable business impact, including $400k+ annual cost savings. Hands-on experience supporting AI/ML platforms, GPU infrastructure, and LLM pipelines.</p>
 
-    <!-- ==========================
-         SKILLS
-         ========================== -->
-    <section>
-      <h2>Skills</h2>
+    <h2>SKILLS</h2>
+    <p><strong>Cloud & Virtualization</strong><br>
+    AWS, Azure, OpenStack, Proxmox, VMware ESXi</p>
 
-      <div class="skill-group">
-        <strong>Cloud & Virtualization</strong>
-        AWS, Azure, OpenStack, Proxmox, VMware ESXi
-      </div>
+    <p><strong>Containers & CI/CD</strong><br>
+    Docker, Kubernetes, GitLab CI/CD, Jenkins</p>
 
-      <div class="skill-group">
-        <strong>Containers & CI/CD</strong>
-        Docker, GitLab CI/CD, Jenkins, Terraform, Ansible
-      </div>
+    <p><strong>Infrastructure as Code (IaC)</strong><br>
+    Terraform, Ansible</p>
 
-      <div class="skill-group">
-        <strong>Operating Systems</strong>
-        Linux (Red Hat, CentOS, Ubuntu, SUSE), Windows Server
-      </div>
+    <p><strong>Operating Systems</strong><br>
+    Linux (Red Hat, CentOS, Ubuntu, SUSE), Windows Server</p>
 
-      <div class="skill-group">
-        <strong>Languages & Scripting</strong>
-        Python, Bash, PowerShell, PHP
-      </div>
+    <p><strong>Languages & Scripting</strong><br>
+    Python, Bash, PowerShell, PHP</p>
 
-      <div class="skill-group">
-        <strong>AI & Data Systems</strong>
-        GPU Infrastructure (CUDA), LLM Architecture, AI Orchestration,
-        Prompt Engineering, Data Ingestion, Data Modeling
-      </div>
+    <p><strong>AI & Data Systems</strong><br>
+    GPU Infrastructure (CUDA), LLM Architecture, AI Orchestration, Prompt Engineering, AI Data Ingestion, Data Modeling</p>
 
-      <div class="skill-group">
-        <strong>Reliability & Observability</strong>
-        SRE, Incident Response, On-call, Zabbix, Nagios, PRTG
-      </div>
+    <p><strong>Reliability & Observability</strong><br>
+    SRE, Incident Response, On-call, Zabbix, Nagios, PRTG</p>
 
-      <div class="skill-group">
-        <strong>Networking & Identity</strong>
-        DNS, DHCP, LDAP, Active Directory, RADIUS
-      </div>
+    <p><strong>Networking & Identity</strong><br>
+    DNS, DHCP, LDAP, Active Directory, RADIUS</p>
 
-      <div class="skill-group">
-        <strong>Databases</strong>
-        MongoDB, MySQL, MariaDB
-      </div>
-    </section>
+    <p><strong>Databases</strong><br>
+    MongoDB, MySQL, MariaDB</p>
 
-    <!-- ==========================
-         EXPERIENCE
-         ========================== -->
-    <section>
-      <h2>Work Experience</h2>
+    <p><strong>Platform Engineering & Automation</strong><br>
+    CI/CD Pipelines, Infrastructure as Code, Automation, Production Systems</p>
 
-      <h3>Downtown DevOps — Philadelphia, PA</h3>
-      <p class="role">Founder / Principal DevOps Engineer (Contract)</p>
-      <p class="dates">03/2019 – Present</p>
+    <h2>WORK EXPERIENCE</h2>
+
+    <div class="company">Downtown DevOps — Philadelphia, PA</div>
+    <p class="position">IT services and consulting firm providing SRE, CI/CD, and infrastructure leadership across multiple organizations.</p>
+    <p class="position">Principal DevOps Engineer / SRE (Founder, Contract)</p>
+    <p class="dates">03/2019 – Present</p>
+    <ul>
+      <li>Provided principal-level SRE and platform engineering leadership across multiple client organizations, serving as escalation point for complex, multi-system production failures.</li>
+      <li>Spearheaded incident response for critical outages, ensuring seamless service restoration and long-term improvements.</li>
+      <li>Led cross-functional teams to resolve complex issues, resulting in enhanced system reliability and performance across multiple organizations.</li>
+      <li>Designed, operated, and maintained Proxmox clusters, GitLab, email systems, NAS platforms, and mixed Windows/Linux environments.</li>
+    </ul>
+
+    <div class="company">Tamman Inc — Philadelphia, PA</div>
+    <p class="position">Digital accessibility solutions company (~$4.6M revenue, 50+ employees).</p>
+    <p class="position">Senior DevOps Engineer / Technical Lead (Contract, Part-time)</p>
+    <p class="dates">09/2016 – 04/2025</p>
+    <ul>
+      <li>Developed GPU-optimized servers for AI experimentation using CUDA, empowering early-stage AI and ML workloads.</li>
+      <li>Implemented CI/CD pipelines in GitLab for CUDA-based AI projects, streamlining development and deployment workflows.</li>
+      <li>Built production, staging, demo, and development environments using Azure, Bitbucket, MongoDB Cloud, and Proxmox.</li>
+    </ul>
+
+    <div class="company">ReminderMedia — King of Prussia, PA</div>
+    <p class="position">Relationship marketing technology company (300+ employees, ~$73M revenue).</p>
+    <p class="position">Senior DevOps Engineer / Technical Lead (Contract)</p>
+    <p class="dates">12/2016 – 12/2024</p>
+    <ul>
+      <li>Optimized production systems by rewriting PHP code and tuning server performance, reducing processing time by over 2 hours per run and saving $400k+ annually.</li>
+      <li>Developed fuzzy-logic matching software in Python to correlate identities across disparate data sources, generating 500,000+ new CRM leads.</li>
+      <li>Built staging and QA environments that significantly reduced outages caused by flawed deployments and system patches.</li>
+      <li>Automated PXE-based system provisioning in VMware ESXi environments using BIND, DHCP, GitLab, Python, and Bash.</li>
+      <li>Implemented monitoring and data-integrity detection algorithms to proactively identify issues before customer impact.</li>
+    </ul>
+
+    <div class="company">Comcast (via NCS Technologies) — PA / NJ</div>
+    <p class="position">Global media and technology company (180k+ employees).</p>
+    <p class="position">SRE Manager / Principal Application Support Engineer</p>
+    <p class="dates">05/2014 – 12/2016</p>
+    <ul>
+      <li>Led enterprise-wide incident communications during major national outages, coordinating engineers, managers, and executives to minimize customer impact.</li>
+      <li>Designed and built Bella Vista, an internal application that dramatically improved triage, analysis, and resolution of distributed system failures affecting 1M+ customers.</li>
+      <li>Architected and operated real-time reliability dashboards for the DNC Convention and NBC Rio Olympics, providing live system health and content availability metrics during global events.</li>
+    </ul>
+
+    <div class="company">Vincent Communications — Woodbury, NJ</div>
+    <p class="position">Founder / Principal Software Engineer / Systems Administrator</p>
+    <p class="dates">11/2010 – 05/2014</p>
+    <ul>
+      <li>Automated UI layout and content generation via database-driven design using Perl, reducing development time by over 50%.</li>
+      <li>Installed, configured, and maintained Red Hat Enterprise Linux and Windows Server environments.</li>
+    </ul>
+
+    <div class="company">Princeton University — Princeton, NJ</div>
+    <p class="position">Systems Administrator / IT Support</p>
+    <p class="dates">10/1996 – 11/2010</p>
+    <ul>
+      <li>Modernized the Mathematics Department infrastructure by migrating legacy Sun systems to Dell hardware running Red Hat Linux, improving performance and reliability.</li>
+      <li>Replaced legacy file servers with a NetApp appliance, enhancing NFS throughput and simplification of administration.</li>
+      <li>Designed and implemented an enterprise trouble-ticketing system, reducing response times by 90% through automation and paging integration.</li>
+    </ul>
+
+    <div class="keywords">
+      <h2>Additional Keywords</h2>
       <ul>
-        <li>IT services and consulting firm providing SRE, CI/CD, and infrastructure leadership.</li>
-        <li>Led incident response for complex production outages, significantly improving reliability.</li>
-        <li>Assembled and led cross-functional teams during high-impact incidents.</li>
-        <li>Designed and operated Proxmox clusters, GitLab, email systems, and mixed OS environments.</li>
+        <li>Cloud Infrastructure</li>
+        <li>Platform Engineering</li>
+        <li>Site Reliability Engineering</li>
+        <li>Infrastructure as Code</li>
+        <li>Disaster Recovery</li>
+        <li>Monitoring and Observability</li>
+        <li>CI/CD Pipelines</li>
+        <li>DevOps</li>
+        <li>Containerization</li>
+        <li>Automation</li>
+        <li>Production Systems</li>
+        <li>AI/ML Infrastructure</li>
+        <li>GPU Computing</li>
+        <li>LLM Platforms</li>
+        <li>Cloud Migration</li>
+        <li>System Administration</li>
+        <li>Network Security</li>
+        <li>Performance Tuning</li>
       </ul>
-
-      <h3>Tamman Inc — Philadelphia, PA</h3>
-      <p class="role">Senior DevOps Engineer / Technical Lead (Contract, Part-time)</p>
-      <p class="dates">09/2016 – 04/2025</p>
-      <ul>
-        <li>Digital accessibility company (~$4.6M revenue, 50+ employees).</li>
-        <li>Built GPU-optimized servers for CUDA-based AI experimentation.</li>
-        <li>Implemented CI/CD pipelines for AI and application workloads.</li>
-        <li>Designed and operated a highly available Proxmox cluster.</li>
-      </ul>
-    </section>
-
-    <section class="page-break">
-      <h3>ReminderMedia — King of Prussia, PA</h3>
-      <p class="role">Senior DevOps Engineer / Technical Lead (Contract)</p>
-      <p class="dates">12/2016 – 12/2024</p>
-      <ul>
-        <li>Reduced processing time by over 2 hours per run, saving $400k+ annually.</li>
-        <li>Developed Python fuzzy-matching software generating 500k+ new CRM leads.</li>
-        <li>Built staging and QA environments to reduce deployment-related outages.</li>
-      </ul>
-
-      <h3>Comcast (via NCS Technologies) — PA / NJ</h3>
-      <p class="role">SRE Manager / Principal Application Support Engineer</p>
-      <p class="dates">05/2014 – 12/2016</p>
-      <ul>
-        <li>Led enterprise-wide incident communications during national outages.</li>
-        <li>Designed internal tooling to improve distributed system triage.</li>
-        <li>Operated real-time dashboards for the DNC Convention and NBC Olympics.</li>
-      </ul>
-
-      <h3>Vincent Communications — Woodbury, NJ</h3>
-      <p class="role">Founder / Principal Software Engineer</p>
-      <p class="dates">11/2010 – 05/2014</p>
-      <ul>
-        <li>Cut development time by 50% through database-driven UI automation.</li>
-        <li>Installed and maintained Linux and Windows Server environments.</li>
-      </ul>
-
-      <h3>Princeton University — Princeton, NJ</h3>
-      <p class="role">Systems Administrator / IT Support</p>
-      <p class="dates">10/1996 – 11/2010</p>
-      <ul>
-        <li>Migrated legacy Sun systems to Dell Linux infrastructure.</li>
-        <li>Implemented NetApp storage and improved NFS throughput.</li>
-        <li>Built automated ticketing systems reducing response time by 90%.</li>
-      </ul>
-    </section>
-
+    </div>
   </div>
 </body>
 </html>
