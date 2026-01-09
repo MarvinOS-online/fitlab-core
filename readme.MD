@@ -1,3 +1,5 @@
+This branch is for MarvnOS.Online only
+
 MarvinOS Local AI Stack
 
 A fully self-hosted, GPU-accelerated AI stack designed for local experimentation, secure internal use, offline environments, and MarvinOS development.
