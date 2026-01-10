@@ -1,245 +1,151 @@
-*** This branch is for MarvnOS.Online only ***
-
 MarvinOS Local AI Stack
 
 A fully self-hosted, GPU-accelerated AI stack designed for local experimentation, secure internal use, offline environments, and MarvinOS development.
 
-This stack combines:
+This stack is Docker-based, reproducible, and designed to survive rebuilds without data loss.
 
-Ollama (local LLM runtime)
+✨ Features
 
-Open WebUI (chat interface)
+Fully local LLM inference (no cloud dependency)
 
-Nginx (TLS ingress)
+GPU-accelerated (NVIDIA)
 
-SearXNG (private web search)
+HTTPS ingress with Nginx
 
-Local TTS (OpenAI-compatible)
+Web-based chat UI (Open WebUI)
 
-One-shot configuration and model preloading jobs
+Private web search grounding (SearXNG)
 
-Everything is Docker-based, reproducible, and designed to survive rebuilds without data loss.
+Local OpenAI-compatible TTS
 
-ARCHITECTURE OVERVIEW
+Stable Diffusion-based image creation (local GPU inference)
+
+One-shot configuration + model preload jobs
+
+Persistent data stored outside the repo
+
+🧠 Stack Components
+
+Ollama — Local LLM runtime (GPU accelerated)
+
+Open WebUI — Chat interface
+
+Nginx — TLS ingress + reverse proxy
+
+SearXNG — Private meta-search engine
+
+openai-edge-tts — Local OpenAI-compatible TTS
+
+Stable Diffusion (automatic1111) — Local image generation API
+
+One-shot config & model pull containers
+
+🏗 Architecture Overview
+
 User
- -> HTTPS (Nginx Ingress)
- -> Open WebUI
- -> Ollama (LLMs, GPU)
- -> SearXNG (Web Search)
- -> openai-edge-tts (Speech)
+ └─ HTTPS (Nginx Ingress)
+     └─ Open WebUI
+         ├─ Ollama (LLMs, GPU)
+         ├─ Stable Diffusion API (Image Generation)
+         ├─ SearXNG (Web Search)
+         └─ openai-edge-tts (Speech)
 
 
-Persistent data lives outside the repo under ../MarvinOS_Data.
+Persistent data is stored outside the repository under:
+../MarvinOS_Data
 
-SERVICES
+📦 Services
+
 configure_ingress
 
-One-shot container that copies curated Nginx configs and HTML assets, generates or installs SSL certificates, and writes everything into persistent volumes under MarvinOS_Data.
+One-shot container
 
-Runs once and exits.
+Copies curated Nginx configs and HTML assets
+
+Generates or installs SSL certificates
+
+Writes everything into persistent volumes under MarvinOS_Data
+
+Runs once and exits
 
 configure_searxng
 
-One-shot container that copies curated SearXNG configuration files into persistent storage under MarvinOS_Data/searxng.
+One-shot container
 
-Runs once and exits.
+Copies curated SearXNG configuration into persistent storage
+
+Runs once and exits
 
 ingress (Nginx)
 
-Acts as the public entry point.
-
-Listens on ports 80 and 443
+Public entry point, listens on 80 / 443
 
 Terminates TLS (self-signed by default)
 
-Serves static HTML if present
-
 Proxies traffic to Open WebUI
 
-Includes a healthcheck using nginx -t
+Healthcheck via nginx -t
 
 ollama
 
-Local GPU-accelerated LLM runtime.
+Local GPU-accelerated LLM runtime, port 11434
 
-Exposes port 11434
+Supports NVIDIA GPUs
 
-Automatically binds to 0.0.0.0
+Tuned via environment variables (Flash Attention, KV cache, GPU layers)
 
-Uses NVIDIA GPUs
+Persistent storage: ../MarvinOS_Data/ollama
 
-Runtime tuned via environment variables (see GPU configuration below)
+pull-llm- (Model Jobs)*
 
-Persistent storage:
+One-shot model download containers
 
-../MarvinOS_Data/ollama
+Preload models into persistent storage
 
-🔧 GPU-SPECIFIC OLLAMA CONFIGURATION (IMPORTANT)
-
-Ollama is tuned differently depending on GPU architecture.
-
-Tesla P100 GPUs (Pascal architecture) behave very differently from modern RTX / Ampere / Ada GPUs.
-Because of this, the ollama service includes two mutually exclusive configuration blocks.
-
-👉 Only one block should be active at a time.
-
-Tesla P100 (Pascal) – Default Configuration
-
-These settings are optimized specifically for Tesla P100-PCIE-12GB GPUs:
-
-No Tensor Cores
-
-Limited Flash Attention support
-
-Strong FP16 performance
-
-12GB VRAM constraint
-
-environment:
-  - OLLAMA_HOST=0.0.0.0
-  - OLLAMA_NUM_CTX=32768
-
-  # Tesla P100 ONLY
-  - OLLAMA_FLASH_ATTENTION=0
-  - OLLAMA_KV_CACHE_TYPE=f16
-  - OLLAMA_GPU_LAYERS=-1
-
-
-Why this configuration exists:
-
-Flash Attention provides little or no benefit on Pascal GPUs
-
-FP16 KV cache performs better than quantized caches on P100
-
-Automatic GPU layer placement avoids CPU fallback
-
-Large context windows are supported but VRAM usage should be monitored
-
-✅ Leave these lines enabled if you are using a Tesla P100
-
-Non-P100 GPUs (RTX / Ampere / Ada)
-
-If you are not using a Tesla P100 (for example: RTX 3060/3090, A4000, A6000, etc.), you should switch to the modern GPU configuration.
-
-Step 1: Comment out the P100 block
-# - OLLAMA_FLASH_ATTENTION=0
-# - OLLAMA_KV_CACHE_TYPE=f16
-# - OLLAMA_GPU_LAYERS=-1
-
-Step 2: Uncomment the non-P100 block
-- OLLAMA_FLASH_ATTENTION=1
-- OLLAMA_KV_CACHE_TYPE=q4_0
-- OLLAMA_GPU_LAYERS=40
-
-
-Why this is better for modern GPUs:
-
-Flash Attention is fully supported and faster
-
-Quantized KV cache reduces VRAM usage
-
-Fixed GPU layer offload improves predictability
-
-Tensor Cores are utilized effectively
-
-⚠️ Do not use these settings on a Tesla P100
-
-Verifying GPU Acceleration
-
-After starting the stack, verify Ollama is using the GPU correctly:
-
-docker compose logs -f ollama
-
-
-You should see:
-
-CUDA initialization messages
-
-No CPU fallback warnings
-
-Stable VRAM usage
-
-Verify GPU visibility:
-
-docker run --rm --gpus all nvidia/cuda:12.2.0-base nvidia-smi
-
-pull-llm-* model jobs
-
-One-time model download containers.
-
-Depend on Ollama
-
-Pre-download models into persistent storage
-
-Exit automatically when finished
-
-Safe to add, remove, or re-run
-
-Included model categories:
-
-General-purpose models
-
-Visual reasoning models
-
-Unlocked / abliterated models
-
-Coding and embedding models
+Safe to re-run or remove
 
 open-webui
 
-Primary LLM chat interface.
+Primary LLM chat interface (port 8080)
 
-Runs on port 8080 internally
+Proxied via Nginx
 
-Proxied by Nginx for HTTPS access
+Integrates Ollama, SearXNG, local TTS, and Stable Diffusion image generation
 
-Authentication and signup enabled by default
-
-Connected directly to Ollama
-
-Integrated with SearXNG and local TTS
-
-Persistent storage:
-
-../MarvinOS_Data/open-webui
+Persistent storage: ../MarvinOS_Data/open-webui
 
 openai-edge-tts
 
-Optional local text-to-speech service compatible with Open WebUI.
+Local text-to-speech service (port 5050)
 
-Runs on port 5050
-
-No OpenAI cloud access required
-
-Provides a local OpenAI-compatible speech API
+OpenAI-compatible speech API
 
 searxng
 
-Private meta-search engine used for LLM grounding.
+Private meta-search engine for LLM grounding
 
-Runs internally on port 8080
+Internal port 8080, optional debug access 8081
 
-Exposed on port 8081 for debugging if needed
+Persistent storage: ../MarvinOS_Data/searxng
 
-Configuration persists across rebuilds
+stable-diffusion
 
-Persistent storage:
+Local image generation API using Automatic1111
 
-../MarvinOS_Data/searxng
+GPU-accelerated
 
-NETWORKS
+Port 7860, API accessible to Open WebUI
 
-Two Docker bridge networks are used:
+Persistent storage: ../MarvinOS_Data/stable-diffusion
 
-default
+🌐 Networks
 
-Standard container connectivity.
+default — Standard container connectivity
 
-MarvinOSNET
+MarvinOSNET — Shared network for MarvinOS services
 
-Explicit shared network for MarvinOS services, allowing future isolation or security tightening without redesign.
+📁 Directory Layout
 
-DIRECTORY LAYOUT
 .
 ├── docker-compose.yml
 ├── Dockerfile.NginxConfig
@@ -255,14 +161,13 @@ DIRECTORY LAYOUT
     ├── html/
     ├── ollama/
     ├── open-webui/
-    └── searxng/
+    ├── searxng/
+    └── stable-diffusion/
 
 
-Important: MarvinOS_Data lives outside the repo to preserve data across rebuilds.
+🧰 Prerequisites
 
-PREREQUISITES
-
-Linux host recommended
+Linux host (recommended)
 
 Docker 24+
 
@@ -270,23 +175,23 @@ Docker Compose v2
 
 NVIDIA GPU (8GB+ recommended)
 
-NVIDIA drivers installed
-
-NVIDIA Container Toolkit installed
+NVIDIA drivers + Container Toolkit installed
 
 Verify GPU support:
 
 docker run --rm --gpus all nvidia/cuda:12.2.0-base nvidia-smi
 
-FIRST-TIME SETUP
-Build and start everything
+
+🚀 First-Time Setup
+
 docker compose up --build
 
-Wait for model pulls to complete
 
-Model pull containers will exit automatically when finished.
+One-shot config containers run and exit
 
-Access the UI
+Model pull containers download models and exit
+
+Access UI:
 
 HTTP: http://localhost
 
@@ -294,22 +199,13 @@ HTTPS: https://localhost
 
 Direct UI (debug): http://localhost:8080
 
-COMMON OPERATIONS
+🔁 Common Operations
 
-Restart the stack:
+Restart stack: docker compose restart
 
-docker compose restart
+Stop stack: docker compose down
 
-
-Stop everything:
-
-docker compose down
-
-
-Pull additional models:
-
-docker compose up pull-llm-ollama-yourmodel
-
+Pull additional models: docker compose up pull-llm-ollama-yourmodel
 
 View logs:
 
@@ -317,21 +213,20 @@ docker compose logs -f open-webui
 docker compose logs -f ollama
 docker compose logs -f ingress
 
-SECURITY NOTES
+
+🔐 Security Notes
 
 SSL certificates are self-signed by default
 
 Open WebUI authentication is enabled
 
-Replace all placeholder secrets before exposure
+Replace placeholder secrets before exposure
 
 SearXNG is intended for internal use
 
-This stack is not hardened for public internet exposure
+Not hardened for public internet exposure
 
-INTENDED USE
-
-This stack is ideal for:
+🎯 Intended Use
 
 Local AI experimentation
 
@@ -339,18 +234,20 @@ Secure internal LLM access
 
 GPU-accelerated inference
 
-MarvinOS development and integration
+MarvinOS development
 
 Offline or air-gapped environments
 
-LICENSE / ATTRIBUTION
+📜 License / Attribution
 
-Ollama: Apache 2.0
+Ollama — Apache 2.0
 
-Open WebUI: MIT
+Open WebUI — MIT
 
-Nginx: BSD-like
+Nginx — BSD-like
 
-SearXNG: AGPLv3
+SearXNG — AGPLv3
 
-This orchestration: use freely, modify freely
+Automatic1111 Stable Diffusion — GPL-compatible
+
+This orchestration layer: use freely, modify freely

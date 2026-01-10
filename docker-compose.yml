@@ -103,13 +103,22 @@ services:
       - DEFAULT_MODEL=llama3.2:3b
       - ENABLE_AUTH=true
       - ENABLE_SIGNUP=true
-      - WEBUI_SECRET_KEY=---open-webui-key---
+      - WEBUI_SECRET_KEY=open-webui-key
+      # TTS Settings
       - AUDIO_TTS_ENGINE=openai
-      - AUDIO_TTS_OPENAI_API_KEY=--openai-edge-tts-key--
+      - AUDIO_TTS_OPENAI_API_KEY=openai-edge-tts-key
       - AUDIO_TTS_OPENAI_API_BASE_URL=http://openai-edge-tts:5050
+      # Web Search
       - ENABLE_WEB_SEARCH=true
       - WEB_SEARCH_ENGINE=searxng
       - SEARXNG_QUERY_URL=http://searxng:8080/search?q=<query>
+      # Stable Diffusion API
+      - ENABLE_IMAGE_GENERATION=True
+      - IMAGE_GENERATION_ENGINE=automatic1111
+      - AUTOMATIC1111_BASE_URL=http://stable-diffusion:7860
+      - AUTOMATIC1111_API_AUTH=username:stable-diffusion-key
+      - IMAGE_GENERATION_MODEL=v1-5-pruned-emaonly
+
     volumes:
       - ../MarvinOS_Data/open-webui:/app/backend/data:rw
     depends_on:
@@ -131,7 +140,7 @@ services:
     ports:
       - "5050:5050"
     environment:
-      - API_KEY=--openai-edge-tts-key--
+      - API_KEY=openai-edge-tts-key
     networks:
       - default
       - MarvinOSNET
@@ -152,6 +161,25 @@ services:
     networks:
       - default
       - MarvinOSNET
+
+  stable-diffusion:
+    image: goolashe/automatic1111-sd-webui:latest
+    container_name: stable-diffusion
+    ports:
+      - "7860:7860"
+    environment:
+      CLI_ARGS: "--api --listen --api-auth username:stable-diffusion-key"
+    volumes:
+      - ../MarvinOS_Data/stable-diffusion:/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    networks:
+      - default
+      - MarvinOSNET
+    restart: unless-stopped
 
 networks:
   default:
