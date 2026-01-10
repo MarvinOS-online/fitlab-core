@@ -1,4 +1,4 @@
-**** This branch is for MarvnOS.Online only ****
+*** This branch is for MarvnOS.Online only ***
 
 MarvinOS Local AI Stack
 
