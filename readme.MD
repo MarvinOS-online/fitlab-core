@@ -20,15 +20,21 @@ Local OpenAI-compatible TTS
 
 Stable Diffusion-based image creation (local GPU inference)
 
-One-shot configuration + model preload jobs
+Retrieval-Augmented Generation (RAG) with vector database
 
-Persistent data stored outside the repo
+Local document ingestion + semantic search
+
+One-shot configuration containers
+
+Persistent data stored outside the repository
 
 🧠 Stack Components
 
-Ollama — Local LLM runtime (GPU accelerated)
+Ollama — Local LLM runtime + embedding engine (GPU accelerated)
 
-Open WebUI — Chat interface
+Open WebUI — Chat interface + RAG orchestration
+
+Qdrant — Vector database for embeddings (RAG)
 
 Nginx — TLS ingress + reverse proxy
 
@@ -36,26 +42,64 @@ SearXNG — Private meta-search engine
 
 openai-edge-tts — Local OpenAI-compatible TTS
 
-Stable Diffusion (automatic1111) — Local image generation API
+Stable Diffusion (Automatic1111) — Local image generation API
 
-One-shot config & model pull containers
+🧠 RAG (Retrieval-Augmented Generation)
+
+This stack includes a fully local RAG pipeline with no external dependencies.
+
+RAG Flow
+
+Documents are uploaded via Open WebUI
+
+Text is embedded locally using Ollama
+
+Embeddings are stored in Qdrant
+
+Relevant context is retrieved per query
+
+Context is injected into the LLM prompt
+
+Responses include citations
+
+RAG Configuration
+
+Vector DB: Qdrant
+
+Embedding Engine: Ollama
+
+Embedding Model: nomic-embed-text:v1.5
+
+Citations: Enabled
+
+Persistence: Disk-backed, rebuild-safe
+
+This supports:
+
+Local knowledge bases
+
+Long-lived document memory
+
+Offline / air-gapped environments
+
+Secure internal data
 
 🏗 Architecture Overview
-
 User
  └─ HTTPS (Nginx Ingress)
      └─ Open WebUI
-         ├─ Ollama (LLMs, GPU)
-         ├─ Stable Diffusion API (Image Generation)
+         ├─ Ollama (LLMs + Embeddings, GPU)
+         ├─ Qdrant (Vector DB / RAG)
+         ├─ Stable Diffusion API
          ├─ SearXNG (Web Search)
          └─ openai-edge-tts (Speech)
 
 
 Persistent data is stored outside the repository under:
+
 ../MarvinOS_Data
 
 📦 Services
-
 configure_ingress
 
 One-shot container
@@ -64,7 +108,7 @@ Copies curated Nginx configs and HTML assets
 
 Generates or installs SSL certificates
 
-Writes everything into persistent volumes under MarvinOS_Data
+Writes into persistent volumes
 
 Runs once and exits
 
@@ -72,13 +116,13 @@ configure_searxng
 
 One-shot container
 
-Copies curated SearXNG configuration into persistent storage
+Copies curated SearXNG configuration
 
 Runs once and exits
 
 ingress (Nginx)
 
-Public entry point, listens on 80 / 443
+Public entry point (ports 80 / 443)
 
 Terminates TLS (self-signed by default)
 
@@ -88,64 +132,85 @@ Healthcheck via nginx -t
 
 ollama
 
-Local GPU-accelerated LLM runtime, port 11434
+Local GPU-accelerated LLM runtime
 
-Supports NVIDIA GPUs
+Used for:
 
-Tuned via environment variables (Flash Attention, KV cache, GPU layers)
+Chat inference
+
+RAG embeddings
+
+Port: 11434
 
 Persistent storage: ../MarvinOS_Data/ollama
 
-pull-llm- (Model Jobs)*
-
-One-shot model download containers
-
-Preload models into persistent storage
-
-Safe to re-run or remove
+Tuned via environment variables per GPU type
 
 open-webui
 
-Primary LLM chat interface (port 8080)
+Primary chat + RAG interface
+
+Port: 8080
 
 Proxied via Nginx
 
-Integrates Ollama, SearXNG, local TTS, and Stable Diffusion image generation
+Integrates:
+
+Ollama
+
+Qdrant
+
+SearXNG
+
+Stable Diffusion
+
+Local TTS
 
 Persistent storage: ../MarvinOS_Data/open-webui
 
+qdrant
+
+Vector database for RAG
+
+Port: 6333
+
+API-key protected
+
+Persistent storage: ../MarvinOS_Data/qdrant
+
 openai-edge-tts
 
-Local text-to-speech service (port 5050)
+Local OpenAI-compatible text-to-speech
 
-OpenAI-compatible speech API
+Port: 5050
 
 searxng
 
-Private meta-search engine for LLM grounding
+Private meta-search engine
 
-Internal port 8080, optional debug access 8081
+Internal port: 8080
+
+Optional debug access: 8081
 
 Persistent storage: ../MarvinOS_Data/searxng
 
 stable-diffusion
 
-Local image generation API using Automatic1111
+Automatic1111-based image generation API
 
 GPU-accelerated
 
-Port 7860, API accessible to Open WebUI
+Port: 7860
 
 Persistent storage: ../MarvinOS_Data/stable-diffusion
 
 🌐 Networks
 
-default — Standard container connectivity
+default — Standard Docker bridge
 
-MarvinOSNET — Shared network for MarvinOS services
+MarvinOSNET — Internal MarvinOS service network
 
 📁 Directory Layout
-
 .
 ├── docker-compose.yml
 ├── Dockerfile.NginxConfig
@@ -161,9 +226,9 @@ MarvinOSNET — Shared network for MarvinOS services
     ├── html/
     ├── ollama/
     ├── open-webui/
+    ├── qdrant/
     ├── searxng/
     └── stable-diffusion/
-
 
 🧰 Prerequisites
 
@@ -181,17 +246,17 @@ Verify GPU support:
 
 docker run --rm --gpus all nvidia/cuda:12.2.0-base nvidia-smi
 
-
 🚀 First-Time Setup
-
 docker compose up --build
 
 
 One-shot config containers run and exit
 
-Model pull containers download models and exit
+Services start automatically
 
-Access UI:
+Data persists across rebuilds
+
+Access Points
 
 HTTP: http://localhost
 
@@ -200,19 +265,36 @@ HTTPS: https://localhost
 Direct UI (debug): http://localhost:8080
 
 🔁 Common Operations
+Restart stack
+docker compose restart
 
-Restart stack: docker compose restart
+Stop stack
+docker compose down
 
-Stop stack: docker compose down
+📥 Pulling Additional Ollama Models
 
-Pull additional models: docker compose up pull-llm-ollama-yourmodel
+All models are managed inside the running Ollama container.
 
-View logs:
+Pull a Model
+docker compose exec ollama ollama pull llama3.2:3b
 
-docker compose logs -f open-webui
-docker compose logs -f ollama
-docker compose logs -f ingress
 
+Examples:
+
+docker compose exec ollama ollama pull mistral:7b
+docker compose exec ollama ollama pull qwen2.5:7b
+docker compose exec ollama ollama pull nomic-embed-text:v1.5
+
+
+Models are stored in:
+
+../MarvinOS_Data/ollama
+
+List Installed Models
+docker compose exec ollama ollama list
+
+Remove a Model
+docker compose exec ollama ollama rm model-name
 
 🔐 Security Notes
 
@@ -222,7 +304,9 @@ Open WebUI authentication is enabled
 
 Replace placeholder secrets before exposure
 
-SearXNG is intended for internal use
+Qdrant is API-key protected but internal-only
+
+SearXNG is intended for private use
 
 Not hardened for public internet exposure
 
@@ -234,9 +318,11 @@ Secure internal LLM access
 
 GPU-accelerated inference
 
+Local RAG knowledge bases
+
 MarvinOS development
 
-Offline or air-gapped environments
+Offline / air-gapped environments
 
 📜 License / Attribution
 
@@ -247,6 +333,8 @@ Open WebUI — MIT
 Nginx — BSD-like
 
 SearXNG — AGPLv3
+
+Qdrant — Apache 2.0
 
 Automatic1111 Stable Diffusion — GPL-compatible
 

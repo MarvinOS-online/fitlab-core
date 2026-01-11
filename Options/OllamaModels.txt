@@ -1,3 +1,6 @@
+## Models for Embedding
+qwen3-embedding:0.6b
+nomic-embed-text:v1.5
 ## General Purpose Models ##
 qwen3
 gemma3:27b
@@ -18,4 +21,3 @@ codegemma:7b
 starcoder2:7b
 granite-code:8b
 opencoder:8b
-qwen3-embedding
