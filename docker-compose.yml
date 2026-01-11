@@ -104,6 +104,9 @@ services:
       - ENABLE_AUTH=true
       - ENABLE_SIGNUP=true
       - WEBUI_SECRET_KEY=open-webui-key
+      - ENABLE_CONVERSATIONAL_MEMORY=true
+      - MEMORY_BACKEND=qdrant
+      - ENABLE_PLUGINS=true
       # TTS Settings
       - AUDIO_TTS_ENGINE=openai
       - AUDIO_TTS_OPENAI_API_KEY=openai-edge-tts-key
@@ -111,10 +114,13 @@ services:
       # Web Search
       - ENABLE_WEB_SEARCH=true
       - WEB_SEARCH_ENGINE=searxng
+      - WEB_SEARCH_RESULTS=10
+      - WEB_SEARCH_TIMEOUT=5
       - SEARXNG_QUERY_URL=http://searxng:8080/search?q=<query>
       # Stable Diffusion API
       - ENABLE_IMAGE_GENERATION=True
       - IMAGE_GENERATION_ENGINE=automatic1111
+      - IMAGE_GENERATION_DEFAULT_STEPS=20
       - AUTOMATIC1111_BASE_URL=http://stable-diffusion:7860
       - AUTOMATIC1111_API_AUTH=username:stable-diffusion-key
       - IMAGE_GENERATION_MODEL=v1-5-pruned-emaonly
