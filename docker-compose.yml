@@ -55,15 +55,11 @@ services:
     gpus: all
     environment:
       - OLLAMA_HOST=0.0.0.0
-      - OLLAMA_NUM_CTX=32768
-#     These settngs are for a Tesla P100 GPU Only
-#      - OLLAMA_FLASH_ATTENTION=0
-#      - OLLAMA_KV_CACHE_TYPE=f16
-#      - OLLAMA_GPU_LAYERS=-1
-#     These settings are for all GPUs but a Tesla P100 GPU
+      - OLLAMA_NUM_CTX=4096
       - OLLAMA_FLASH_ATTENTION=1
-      - OLLAMA_KV_CACHE_TYPE=q4_0
-      - OLLAMA_GPU_LAYERS=40
+      - OLLAMA_KV_CACHE_TYPE=f16
+      - OLLAMA_GPU_LAYERS=-1
+      - OLLAMA_DISABLE_CACHE=0
 
     volumes:
       - ../MarvinOS_Data/ollama:/root/.ollama:rw
