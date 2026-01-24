@@ -3,15 +3,15 @@ qwen3-embedding:0.6b
 ## Model for Reranking
 #fanyx/Qwen3-Reranker-0.6B-Q8_0:latest
 ## LLM Models ##
-qwen3:4b
-phi4-mini-reasoning:latest
-deepseek-r1
+#qwen3:4b
+#phi4-mini-reasoning:latest
+#deepseek-r1
 llama3.2
 ## Visual Reasoning Models ##
 qwen3-vl:4b
 ## Unlocked Models ##
 #dolphin-mistral:latest
-mannix/llama3.1-8b-abliterated:latest
+#mannix/llama3.1-8b-abliterated:latest
 ## Coding Models ##
 #qwen3-coder
 #qwen2.5-coder:7b
