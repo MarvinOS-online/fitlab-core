@@ -1,7 +1,3 @@
-## Model for Embedding
-qwen3-embedding:0.6b
-## Model for Reranking
-#fanyx/Qwen3-Reranker-0.6B-Q8_0:latest
 ## LLM Models ##
 #qwen3:4b
 #phi4-mini-reasoning:latest
@@ -21,3 +17,7 @@ qwen3-vl:4b
 #starcoder2:7b
 #granite-code:8b
 #opencoder:8b
+## Model for Embedding
+qwen3-embedding:0.6b
+## Model for Reranking
+#fanyx/Qwen3-Reranker-0.6B-Q8_0:latest

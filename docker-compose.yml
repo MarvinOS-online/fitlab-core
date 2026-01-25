@@ -12,7 +12,6 @@ services:
       dockerfile: Dockerfile.NginxConfig
     restart: "no"
     networks:
-      - default
       - MarvinOSNET
 
   configure_searxng:
@@ -24,7 +23,6 @@ services:
       dockerfile: Dockerfile.SearxngConfig
     restart: "no"
     networks:
-      - default
       - MarvinOSNET
 
   ingress:
@@ -38,7 +36,6 @@ services:
       - ../MarvinOS_Data/certs:/certs:ro
       - ../MarvinOS_Data/html:/html:ro
     networks:
-      - default
       - MarvinOSNET
     depends_on:
       - open-webui
@@ -72,7 +69,6 @@ services:
       timeout: 10s
       retries: 5
     networks:
-      - default
       - MarvinOSNET
 
   # Model pull jobs
@@ -84,7 +80,6 @@ services:
     depends_on:
       - ollama
     networks:
-      - default
       - MarvinOSNET
     restart: "no"
 
@@ -155,7 +150,6 @@ services:
     volumes:
       - ../MarvinOS_Data/openedai-speech:/app/voices
     networks:
-      - default
       - MarvinOSNET
     restart: unless-stopped
 
@@ -173,7 +167,6 @@ services:
     volumes:
       - ../MarvinOS_Data/searxng:/etc/searxng:rw
     networks:
-      - default
       - MarvinOSNET
 
   stable-diffusion:
@@ -191,7 +184,6 @@ services:
           devices:
             - capabilities: [gpu]
     networks:
-      - default
       - MarvinOSNET
     restart: unless-stopped
 
@@ -205,7 +197,6 @@ services:
     volumes:
       - ../MarvinOS_Data/qdrant:/qdrant/storage
     networks:
-      - default
       - MarvinOSNET
     restart: unless-stopped
 
