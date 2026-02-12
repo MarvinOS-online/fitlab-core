@@ -78,11 +78,11 @@ Long-lived document memory
 User
 └─ HTTPS (Nginx)
 └─ Open WebUI
-├─ Ollama (LLM + Embeddings, GPU)
-├─ Qdrant (Vector DB)
-├─ Stable Diffusion API
-├─ SearXNG
-└─ openai-edge-tts
+  ├─ Ollama (LLM + Embeddings, GPU)
+  ├─ Qdrant (Vector DB)
+  ├─ Stable Diffusion API
+  ├─ SearXNG
+  └─ openai-edge-tts
 
 Persistent data stored in:
 
