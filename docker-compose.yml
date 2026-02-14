@@ -1,5 +1,14 @@
 services:
 
+  configure_env:
+    user: "$HOST_UID:${HOST_GID}"
+    volumes:
+      - ../MarvinOS_Data:/data:rw
+    build:
+      context: ./
+      dockerfile: Dockerfile.env
+    restart: "no"
+
   configure_ingress:
     volumes:
       - ./nginx/etc:/nginx_repo_configs:ro
@@ -11,8 +20,9 @@ services:
       context: ./
       dockerfile: Dockerfile.NginxConfig
     restart: "no"
-    networks:
-      - MarvinOSNET
+    depends_on:
+      configure_env:
+        condition: service_completed_successfully
 
   configure_searxng:
     volumes:
@@ -24,6 +34,9 @@ services:
     restart: "no"
     networks:
       - MarvinOSNET
+    depends_on:
+      configure_env:
+        condition: service_completed_successfully
 
   ingress:
     image: nginx:latest
@@ -38,7 +51,10 @@ services:
     networks:
       - MarvinOSNET
     depends_on:
-      - open-webui
+      configure_env:
+        condition: service_completed_successfully
+      open-webui:
+        condition: service_started
     healthcheck:
       test: ["CMD-SHELL", "nginx -t -c /etc/nginx/nginx.conf >/tmp/nginx_check.log 2>&1 || { cat /tmp/nginx_check.log; exit 1; }"]
       interval: 10s
@@ -50,6 +66,8 @@ services:
     image: ollama/ollama:latest
     container_name: ollama
     gpus: all
+    env_file:
+      - ../MarvinOS_Data/.env
     environment:
       - OLLAMA_HOST=0.0.0.0
       - OLLAMA_NUM_CTX=4096
@@ -57,7 +75,6 @@ services:
       - OLLAMA_KV_CACHE_TYPE=f16
       - OLLAMA_GPU_LAYERS=-1
       - OLLAMA_DISABLE_CACHE=0
-
     volumes:
       - ../MarvinOS_Data/ollama:/root/.ollama:rw
     ports:
@@ -70,55 +87,57 @@ services:
       retries: 5
     networks:
       - MarvinOSNET
+    depends_on:
+      configure_env:
+        condition: service_completed_successfully
 
-  # Model pull jobs
   pull-llm-ollama-models:
     container_name: pull-llm-ollama-models
     build:
       context: ./
       dockerfile: Dockerfile.pull-model
-    depends_on:
-      - ollama
     networks:
       - MarvinOSNET
     restart: "no"
+    depends_on:
+      configure_env:
+        condition: service_completed_successfully
+      ollama:
+        condition: service_started
 
-  # Open-WebUI  
   open-webui:
     image: ghcr.io/open-webui/open-webui:main
     container_name: open-webui
     ports:
       - "8080:8080"
+    env_file:
+      - ../MarvinOS_Data/.env
     environment:
       - OLLAMA_BASE_URL=http://ollama:11434
       - DEFAULT_MODEL=llama3.2:3b
       - ENABLE_AUTH=true
       - ENABLE_SIGNUP=true
-      - WEBUI_SECRET_KEY=open-webui-key
       - ENABLE_CONVERSATIONAL_MEMORY=true
       - MEMORY_BACKEND=qdrant
       - ENABLE_PLUGINS=true
-      # TTS Settings
+
       - AUDIO_TTS_ENGINE=openai
-      - AUDIO_TTS_OPENAI_API_KEY=openai-edge-tts-key
       - AUDIO_TTS_OPENAI_API_BASE_URL=http://openedai-speech:8000/v1
-      # Web Search
+
       - ENABLE_WEB_SEARCH=true
       - WEB_SEARCH_ENGINE=searxng
       - WEB_SEARCH_RESULTS=10
       - WEB_SEARCH_TIMEOUT=5
       - SEARXNG_QUERY_URL=http://searxng:8080/search?q=<query>
-      # Stable Diffusion API
+
       - ENABLE_IMAGE_GENERATION=True
       - IMAGE_GENERATION_ENGINE=automatic1111
       - IMAGE_GENERATION_DEFAULT_STEPS=20
       - AUTOMATIC1111_BASE_URL=http://stable-diffusion:7860
-      - AUTOMATIC1111_API_AUTH=username:stable-diffusion-key
       - IMAGE_GENERATION_MODEL=v1-5-pruned-emaonly
-      # RAG / Vector DB
+
       - VECTOR_DB=qdrant
       - QDRANT_URI=http://qdrant:6333
-      - QDRANT_API_KEY=qdrant-key
       - RAG_EMBEDDING_ENGINE=ollama
       - RAG_EMBEDDING_MODEL=qwen3-embedding:0.6b
       - ENABLE_RAG=true
@@ -126,9 +145,6 @@ services:
 
     volumes:
       - ../MarvinOS_Data/open-webui:/app/backend/data:rw
-    depends_on:
-      - ollama
-      - qdrant
     networks:
       - default
       - MarvinOSNET
@@ -138,27 +154,37 @@ services:
       interval: 30s
       timeout: 10s
       retries: 6
+    depends_on:
+      configure_env:
+        condition: service_completed_successfully
+      ollama:
+        condition: service_started
+      qdrant:
+        condition: service_started
 
- # openedai-speech (Piper/Coqui)
   openedai-speech:
     image: ghcr.io/matatonic/openedai-speech-min:latest
     container_name: openedai-speech
     ports:
       - "8000:8000"
-    environment:
-      - API_KEY=openai-edge-tts-key
+    env_file:
+      - ../MarvinOS_Data/.env
     volumes:
       - ../MarvinOS_Data/openedai-speech:/app/voices
     networks:
       - MarvinOSNET
     restart: unless-stopped
+    depends_on:
+      configure_env:
+        condition: service_completed_successfully
 
-  # SearXNG
   searxng:
     image: searxng/searxng:latest
     container_name: searxng
     ports:
-    - "8081:8080"
+      - "8081:8080"
+    env_file:
+      - ../MarvinOS_Data/.env
     restart: unless-stopped
     environment:
       - SEARXNG_BASE_URL=http://searxng:8080/
@@ -168,14 +194,19 @@ services:
       - ../MarvinOS_Data/searxng:/etc/searxng:rw
     networks:
       - MarvinOSNET
+    depends_on:
+      configure_env:
+        condition: service_completed_successfully
 
   stable-diffusion:
     image: goolashe/automatic1111-sd-webui:latest
     container_name: stable-diffusion
     ports:
       - "7860:7860"
+    env_file:
+      - ../MarvinOS_Data/.env
     environment:
-      CLI_ARGS: "--api --listen --api-auth username:stable-diffusion-key"
+      CLI_ARGS: "--api --listen"
     volumes:
       - ../MarvinOS_Data/stable-diffusion:/data
     deploy:
@@ -186,19 +217,25 @@ services:
     networks:
       - MarvinOSNET
     restart: unless-stopped
+    depends_on:
+      configure_env:
+        condition: service_completed_successfully
 
   qdrant:
     image: qdrant/qdrant:latest
     container_name: qdrant
     ports:
       - "6333:6333"
-    environment:
-      - QDRANT__SERVICE__API_KEY=qdrant-key
+    env_file:
+      - ../MarvinOS_Data/.env
     volumes:
       - ../MarvinOS_Data/qdrant:/qdrant/storage
     networks:
       - MarvinOSNET
     restart: unless-stopped
+    depends_on:
+      configure_env:
+        condition: service_completed_successfully
 
 networks:
   default:

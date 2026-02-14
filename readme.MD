@@ -4,193 +4,199 @@ A fully self-hosted, GPU-accelerated AI stack designed for local experimentation
 
 This stack is Docker-based, reproducible, and designed to survive rebuilds without data loss.
 
-⚠️ Intended for Home / Lab Use Only
+⚠️ Intended for Home / Lab Use Only — not hardened for public internet production.
 
-This project is designed for:
-
-Local experimentation
-Private internal environments
-Air-gapped systems
-Development use
-
-It is NOT hardened for public internet production exposure.
-
-Before deploying in any production or internet-accessible environment, you must:
-
-Replace all default secrets
-Use proper certificate management
-Implement firewall restrictions
-Use a dedicated secret manager
-Perform security review and hardening
-You are responsible for securing your deployment.
-
-✨ Features
+🚀 Features
 
 Fully local LLM inference (no cloud dependency)
+
 GPU-accelerated (NVIDIA)
+
 HTTPS ingress with Nginx
+
 Web-based chat UI (Open WebUI)
+
 Private web search grounding (SearXNG)
+
 Local OpenAI-compatible TTS
+
 Stable Diffusion image generation (local GPU)
+
 Retrieval-Augmented Generation (RAG)
+
 Local document ingestion + semantic search
+
 Persistent data outside the repository
+
 Reproducible containerized deployment
 
 🧠 Core Stack
 
 Ollama — LLM runtime + embeddings (GPU accelerated)
+
 Open WebUI — Chat interface + RAG orchestration
+
 Qdrant — Vector database
+
 Nginx — TLS ingress + reverse proxy
+
 SearXNG — Private meta-search
+
 openai-edge-tts — Local OpenAI-compatible TTS
+
 Stable Diffusion (Automatic1111) — Local image generation API
 
 🧠 RAG Architecture
 
-Fully local RAG pipeline with zero external dependencies.
-
-Flow:
+Fully local RAG pipeline with zero external dependencies:
 
 Documents uploaded via Open WebUI
+
 Text embedded locally via Ollama
+
 Embeddings stored in Qdrant
+
 Relevant context retrieved per query
+
 Context injected into prompt
+
 Citations returned in response
 
 Configuration:
 
 Vector DB: Qdrant
+
 Embedding Engine: Ollama
+
 Embedding Model: nomic-embed-text:v1.5
+
 Persistence: Disk-backed
 
 Supports:
+
 Secure internal knowledge bases
+
 Offline environments
+
 Long-lived document memory
 
 🏗 Architecture Overview
-
 User
 └─ HTTPS (Nginx)
-└─ Open WebUI
-  ├─ Ollama (LLM + Embeddings, GPU)
-  ├─ Qdrant (Vector DB)
-  ├─ Stable Diffusion API
-  ├─ SearXNG
-  └─ openai-edge-tts
+   └─ Open WebUI
+       ├─ Ollama (LLM + Embeddings, GPU)
+       ├─ Qdrant (Vector DB)
+       ├─ Stable Diffusion API
+       ├─ SearXNG
+       └─ openai-edge-tts
+
 
 Persistent data stored in:
-
 ../MarvinOS_Data
 
-🔐 Secrets & Key Management
+🔐 Secrets & Setup
+Automatic Secrets
 
-⚠️ Default secrets are placeholders and must be replaced before exposing this stack beyond local use.
+setup.sh now handles all secret generation automatically.
 
-The following values should be changed:
+You no longer need to create a .env manually — keys like:
 
 WEBUI_SECRET_KEY
 QDRANT__SERVICE__API_KEY
 AUTOMATIC1111_API_AUTH
 AUDIO_TTS_OPENAI_API_KEY
 
-Any default passwords or auth strings
 
-Generating Secure Keys
-Generate a strong 32-byte key:
+are generated securely during setup.
 
-Linux/macOS:
+Certificates
 
-openssl rand -base64 32
+You still need to provide valid TLS certificates for HTTPS.
 
-Alternative:
+Place them in:
 
-head -c 32 /dev/urandom | base64
-
-Recommended: Use a .env File
-
-Create a file:
-
-.env
+../MarvinOS_Data/certs
 
 
-Example:
+Self-signed certs are fine for local/lab use.
 
-WEBUI_SECRET_KEY=replace_with_random_value
-QDRANT_API_KEY=replace_with_random_value
-STABLE_DIFFUSION_AUTH=username:strongpassword
+For production or internet-facing environments, use proper certificates and firewall restrictions.
 
-Update docker-compose.yml to reference variables:
+setup.sh
+#!/usr/bin/env bash
+set -e
+export HOST_UID=$(id -u)
+export HOST_GID=$(id -g)
+mkdir -p ../MarvinOS_Data
+docker compose run --rm configure_env
+docker compose up -d
+docker compose logs -f
 
-WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
 
-Add to .gitignore:
-.env
+What it does:
 
+Creates ../MarvinOS_Data if missing
 
-Do not commit secrets to source control.
+Generates secure .env file
+
+Runs one-shot configuration containers
+
+Starts the full stack with GPU-safe permissions
+
+Tails logs automatically
+
+Usage:
+
+./setup.sh
+
 📦 Prerequisites
 
 Linux host (recommended)
+
 Docker 24+
+
 Docker Compose v2
+
 NVIDIA GPU (8GB+ recommended)
+
 NVIDIA drivers + Container Toolkit
 
 Verify GPU access:
 
 docker run --rm --gpus all nvidia/cuda:12.2.0-base nvidia-smi
 
-🚀 First-Time Setup
-docker compose up --build
-
-One-shot configuration containers execute
-
-Services start automatically
-Data persists across rebuilds
-
-Access:
-
-http://localhost
-
-https://localhost
-
-Debug UI: http://localhost:8080
-
 🔁 Operations
 
-Restart:
+Restart services:
+
 docker compose restart
 
 
-Stop:
+Stop services:
+
 docker compose down
 
 📥 Managing Ollama Models
 
 Pull a model:
+
 docker compose exec ollama ollama pull llama3.2:3b
-
-
-Examples:
 docker compose exec ollama ollama pull mistral:7b
 docker compose exec ollama ollama pull qwen2.5:7b
 docker compose exec ollama ollama pull nomic-embed-text:v1.5
 
 
 List installed models:
+
 docker compose exec ollama ollama list
 
 
 Remove a model:
-docker compose exec ollama ollama rm model-name
 
-Models stored in:
+docker compose exec ollama ollama rm <model-name>
+
+
+Models are stored in:
 
 ../MarvinOS_Data/ollama
 
@@ -201,11 +207,17 @@ default — Docker bridge
 MarvinOSNET — Internal service network
 
 🎯 Intended Use Cases
+
 Local AI experimentation
+
 Secure internal LLM access
+
 GPU-accelerated inference
+
 Offline RAG knowledge bases
+
 MarvinOS development
+
 Air-gapped deployments
 
 📜 License
@@ -213,9 +225,15 @@ Air-gapped deployments
 Component licenses apply individually:
 
 Ollama — Apache 2.0
+
 Open WebUI — MIT
+
 Nginx — BSD-like
+
 SearXNG — AGPLv3
+
 Qdrant — Apache 2.0
+
 Automatic1111 — GPL-compatible
-Orchestration layer: free to use and modify.
+
+Orchestration layer — free to use and modify
